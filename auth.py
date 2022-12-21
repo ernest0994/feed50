@@ -7,6 +7,16 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from db import get_db
 
+from password_strength import PasswordPolicy, PasswordStats
+
+policy = PasswordPolicy.from_names(
+    length=8,  # min length: 8
+    uppercase=1,  # need min. 2 uppercase letters
+    numbers=1,  # need min. 2 digits
+    special=1,  # need min. 2 special characters
+    strength=0.66
+)
+
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 
@@ -15,6 +25,7 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        stats = PasswordStats(password)
         db = get_db()
         error = None
 
@@ -22,6 +33,11 @@ def register():
             error = 'Username is required.'
         elif not password:
             error = 'Password is required.'
+        elif stats.strength() < 0.66:
+            print(stats.strength())
+            print(policy.test(password))
+            error = 'Your password must be 8-20 characters long, contain letters and numbers, at least 1 uppercase ' \
+                    'and 1 special characters, and must not contain spaces. '
 
         if error is None:
             try:
