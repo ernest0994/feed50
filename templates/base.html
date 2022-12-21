@@ -10,9 +10,13 @@
 </head>
 <body>
 
-<nav id="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav id="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark align-items-center">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">Feed50</a>
+        <a class="navbar-brand" href="#">
+            <img src="{{ url_for('static', filename='feed50_logo.png') }}" alt="Logo" width="30" height="30"
+                 class="d-inline-block align-text-top">
+            Feed50
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -29,7 +33,8 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 {% if g.user %}
-                    <li class="nav-item"><a class="nav-link disabled text-primary" href="#" aria-disabled="true">{{ g.user['username'] }}</a>
+                    <li class="nav-item"><a class="nav-link disabled text-primary" href="#"
+                                            aria-disabled="true">{{ g.user['username'] }}</a>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
                     </li>
