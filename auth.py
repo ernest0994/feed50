@@ -14,7 +14,7 @@ policy = PasswordPolicy.from_names(
     uppercase=1,  # need min. 2 uppercase letters
     numbers=1,  # need min. 2 digits
     special=1,  # need min. 2 special characters
-    strength=0.66
+    strength=0.5
 )
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
@@ -82,7 +82,7 @@ def login():
             session['user_id'] = user['id']
             return redirect(url_for('index'))
 
-        flash(error)
+        flash(error, 'error')
 
     return render_template('auth/login.html')
 
