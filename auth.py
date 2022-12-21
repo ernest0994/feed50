@@ -25,21 +25,24 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        password_confirmation = request.form['passwordConfirmation']
         stats = PasswordStats(password)
         db = get_db()
-        error = None
+        errors = []
 
         if not username:
-            error = 'Username is required.'
-        elif not password:
-            error = 'Password is required.'
-        elif stats.strength() < 0.66:
+            errors.append('Username is required.')
+        if not password:
+            errors.append('Password is required.')
+        if not password == password_confirmation:
+            errors.append('Passwords do not match')
+        if stats.strength() < 0.5:
             print(stats.strength())
             print(policy.test(password))
-            error = 'Your password must be 8-20 characters long, contain letters and numbers, at least 1 uppercase ' \
-                    'and 1 special characters, and must not contain spaces. '
+            errors.append('Your password must be 8-20 characters long, contain letters and numbers, at least 1 '
+                          'uppercase, and 1 special characters, and must not contain spaces. ')
 
-        if error is None:
+        if not errors:
             try:
                 db.execute(
                     "INSERT INTO user (username, password) VALUES (?, ?)",
@@ -47,11 +50,13 @@ def register():
                 )
                 db.commit()
             except db.IntegrityError:
-                error = f"User {username} is already registered."
+                errors.append(f"User {username} is already registered.")
             else:
+                flash(f"User {username} has been registered successfully!!!")
                 return redirect(url_for("auth.login"))
 
-        flash(error)
+        for error in errors:
+            flash(error, 'error')
 
     return render_template('auth/register.html')
 
