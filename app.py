@@ -1,6 +1,8 @@
 import os
 
-from flask import Flask
+from flask import Flask, render_template
+
+from auth import login_required
 
 
 def create_app(test_config=None):
@@ -29,6 +31,11 @@ def create_app(test_config=None):
     def hello():
         return 'Hello, World!'
 
+    @app.route('/')
+    @login_required
+    def index():
+        return render_template("index.html")
+
     import db
     db.init_app(app)
 
@@ -37,6 +44,7 @@ def create_app(test_config=None):
 
     import feed
     app.register_blueprint(feed.bp)
+
     app.add_url_rule('/', endpoint='index')
 
     return app
