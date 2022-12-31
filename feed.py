@@ -1,3 +1,5 @@
+from time import gmtime, localtime, strptime, time, mktime
+
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
@@ -8,6 +10,8 @@ from db import get_db
 from feedparser import parse
 
 import ast
+
+from datetime import datetime, date, timedelta
 
 bp = Blueprint('feed', __name__, '/feed')
 
@@ -51,8 +55,7 @@ def add():
 def view():
     db = get_db()
     rows = db.execute(
-        'SELECT id, title, url FROM feeds WHERE user_id = ?', (session['user_id'],)
-    )
+        'SELECT id, title, url FROM feeds WHERE user_id = ?', (session['user_id'],))
 
     if not rows:
         return render_template("feeds.html")
@@ -89,3 +92,45 @@ def delete():
 
     flash('Feed deleted successfully')
     return redirect(url_for('feed.view'))
+
+
+def articles():
+    db = get_db()
+    errors = []
+
+    rows = db.execute(
+        'SELECT id, title, url FROM feeds WHERE user_id = ?', (session['user_id'],))
+
+    if not rows:
+        return render_template("index.html")
+
+    articles = []
+
+    for row in rows:
+        feed = {'id': row['id'],
+                'title': row['title'],
+                'url': row['url']
+                }
+
+        res = parse(feed['url'])
+
+        for entry in res.entries:
+            article = {}
+
+            article['id'] = entry['id']
+            article['link'] = entry['link']
+            article['title'] = entry['title']
+            if 'summary' in entry:
+                article['summary'] = entry['summary']
+            if 'media_content' in entry:
+                article['media_content'] = entry['media_content'][0]
+            if 'published' in entry:
+                article['published'] = datetime.fromtimestamp(mktime(entry['published_parsed']))
+            else:
+                article['published'] = datetime.fromtimestamp(mktime(gmtime(datetime.now().timestamp())))
+
+            articles.append(article)
+
+    sorted_articles = sorted(articles, key=lambda d: d['published'])
+
+    return sorted_articles

@@ -34,7 +34,11 @@ def create_app(test_config=None):
     @app.route('/')
     @login_required
     def index():
-        return render_template("index.html")
+        articles = feed.articles()
+        if not articles:
+            return render_template('index.html')
+
+        return render_template('index.html', articles=articles)
 
     import db
     db.init_app(app)
