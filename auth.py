@@ -50,9 +50,9 @@ def register():
                 )
                 db.commit()
             except db.IntegrityError:
-                errors.append(f"User {username} is already registered.")
+                errors.append(f'User {username} is already registered.')
             else:
-                flash(f"User {username} has been registered successfully!!!")
+                flash(f'User {username} has been registered successfully!!!')
                 return redirect(url_for("auth.login"))
 
         for error in errors:
