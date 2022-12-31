@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}Feeds{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <div class="row justify-content-center text-start">
+        <div class="text-center mb-5">
+            <p class="text-secondary h4">Add Feed</p>
+        </div>
+
+        <div class="col-sm-10">
+            {% if feeds is defined %}
+                <table id="data" class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th style="display:none;" scope="col">Id</th>
+                        <th scope="col">Title</th>
+                        <th scope="col">URL</th>
+                        <th style="display:none;" scope="col">Delete</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for feed in feeds %}
+                        <tr>
+                            {% for key, value in feed.items() %}
+                                {% if key == 'id' %}
+                                    <td style="display:none;">{{ value }}</td>
+                                {% else %}
+                                    <td>{{ value }}</td>
+                                {% endif %}
+                            {% endfor %}
+                            <td>
+                                <a href="{{ url_for('feed.delete', feed=feed) }}"
+                                   onclick="return confirm('Do you want to permanently delete this feed?');"
+                                   title="Delete feed">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                         class="bi bi-x" viewBox="0 0 16 16">
+                                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                                    </svg>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="mb-3 text-center">
+                    <h5>There's nothing here. Add some feeds!!!</h5>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='feeds.js') }}"></script>
+{% endblock %}
