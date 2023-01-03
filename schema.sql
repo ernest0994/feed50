@@ -12,5 +12,5 @@ CREATE TABLE feeds (
     user_id INTEGER NOT NULL,
     title TEXT,
     url TEXT UNIQUE NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user (id)
+    FOREIGN KEY (user_id) REFERENCES users (id)
 )
